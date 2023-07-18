@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ namespace Movies.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize("ClientIdPolicy")]
     public class MoviesController : ControllerBase
     {
         private readonly MoviesContext _context;
@@ -25,10 +27,10 @@ namespace Movies.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Movie>>> GetMovie()
         {
-          if (_context.Movie == null)
-          {
-              return NotFound();
-          }
+            if (_context.Movie == null)
+            {
+                return NotFound();
+            }
             return await _context.Movie.ToListAsync();
         }
 
@@ -36,10 +38,10 @@ namespace Movies.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Movie>> GetMovie(int id)
         {
-          if (_context.Movie == null)
-          {
-              return NotFound();
-          }
+            if (_context.Movie == null)
+            {
+                return NotFound();
+            }
             var movie = await _context.Movie.FindAsync(id);
 
             if (movie == null)
@@ -86,10 +88,10 @@ namespace Movies.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Movie>> PostMovie(Movie movie)
         {
-          if (_context.Movie == null)
-          {
-              return Problem("Entity set 'MoviesContext.Movie'  is null.");
-          }
+            if (_context.Movie == null)
+            {
+                return Problem("Entity set 'MoviesContext.Movie'  is null.");
+            }
             _context.Movie.Add(movie);
             await _context.SaveChangesAsync();
 
