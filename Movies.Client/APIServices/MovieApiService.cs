@@ -1,12 +1,29 @@
 ﻿using Movies.Client.Models;
+using Newtonsoft.Json;
+using System.Net.Http;
 
 namespace Movies.Client.APIServices
 {
     public class MovieApiService : IMovieApiService
     {
+
         public async Task<IEnumerable<Movie>> GetMovies()
         {
-            throw new NotImplementedException();
+            var movies = new List<Movie>()
+            {
+                new Movie()
+                {
+                    Id = 1,
+                    Title = "Pulp Fiction",
+                    Genre = "Crime, Drama",
+                    Rating = "8.9",
+                    ImageUrl = "images/src",
+                    ReleaseDate = DateTime.UtcNow,
+                    Owner = "admin"
+                }
+            };
+
+            return await Task.FromResult(movies);
         }
 
         public async Task<Movie> GetMovie(int id)
