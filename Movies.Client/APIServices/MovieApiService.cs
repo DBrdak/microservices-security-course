@@ -6,24 +6,31 @@ namespace Movies.Client.APIServices
 {
     public class MovieApiService : IMovieApiService
     {
+        private readonly IHttpClientFactory _httpClientFactory;
+        //private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public MovieApiService(IHttpClientFactory httpClientFactory/*, IHttpContextAccessor httpContextAccessor*/)
+        {
+            _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            //_httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+        }
 
         public async Task<IEnumerable<Movie>> GetMovies()
         {
-            var movies = new List<Movie>()
-            {
-                new Movie()
-                {
-                    Id = 1,
-                    Title = "Pulp Fiction",
-                    Genre = "Crime, Drama",
-                    Rating = "8.9",
-                    ImageUrl = "images/src",
-                    ReleaseDate = DateTime.UtcNow,
-                    Owner = "admin"
-                }
-            };
+            var httpClient = _httpClientFactory.CreateClient("MovieAPIClient");
 
-            return await Task.FromResult(movies);
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                "/api/Movies");
+
+            var response = await httpClient.SendAsync(
+                request, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+            var movieList = JsonConvert.DeserializeObject<List<Movie>>(content);
+            return movieList;
         }
 
         public async Task<Movie> GetMovie(int id)
